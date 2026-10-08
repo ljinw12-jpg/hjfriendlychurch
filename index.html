@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>교회 효동친화도 진단</title>
+<meta name="description" content="미취학 효동을 위한 우리 교회의 환경·문화·프로그램·안전을 스스로 점검하는 1차 셀프진단입니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* 레이아웃: 파스텔 하늘(분홍→라벤더→하늘) 위 한 장의 흰 카드. 퓨어랑·워터랑이 카드 가장자리에서 반응하고, 결과 점수는 물방울에 차오르는 물높이로 보여준다.
+     밝은 파스텔 한 가지 모습으로 고정한 디자인이라 다크 테마는 두지 않는다. */
+  :root{
+    --bg:#f6f3ff;
+    --bg-grad:linear-gradient(170deg, #fff1f7 0%, #f3efff 42%, #eaf6ff 100%);
+    --hero-grad:linear-gradient(160deg, #ffe3ef 0%, #ece3ff 52%, #dcefff 100%);
+    --surface:#ffffff;
+    --surface-2:#f8f5ff;    /* 라벤더 기운의 옅은 면 */
+    --ink:#2c3a5e;
+    --muted:#77809e;
+    --line:#ebe5f7;
+    --track:#efeaf9;
+    --water:#a7d8f7;        /* 캐릭터 몸 색을 옅게 */
+    --water-soft:#e6f4fd;
+    --cobalt:#5b7fd6;       /* 강조 글자색 */
+    --btn-grad:linear-gradient(135deg, #b4d4ff 0%, #d6c2fc 100%);
+    --pick:#e3ecff;         /* 고른 답 */
+    --pick-line:#8fb0f0;
+    --coral:#d9586c;        /* 퓨어랑 리본, 낮은 점수 */
+    --coral-soft:#ffe6eb;
+    --focus:#f5b45a;
+    --font-display:'Jua', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    --font-body:'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --radius:24px;
+    --shadow:0 18px 44px -26px rgba(122,104,196,.45);
+    color-scheme:light;
+  }
+
+  *{box-sizing:border-box;}
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    background:var(--bg-grad) fixed;
+    background-color:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.7;
+    word-break:keep-all;
+    overflow-wrap:break-word;
+    padding:20px 16px 56px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+  button{ font-family:inherit; }
+  :focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
+
+  .app{ max-width:560px; margin:0 auto; }
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    margin:0 4px 14px;
+  }
+  .brand{ font-family:var(--font-display); font-size:19px; letter-spacing:-.01em; }
+  .brand em{ font-style:normal; color:var(--cobalt); }
+  .topbar-sub{ font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+  .card{
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:28px 22px;
+    position:relative;
+  }
+  h1,h2,h3{ font-family:var(--font-display); font-weight:400; text-wrap:balance; margin:0; letter-spacing:-.01em; }
+  .muted{ color:var(--muted); }
+
+  /* ---- 소개 ---- */
+  .hero{
+    position:relative;
+    margin:-28px -22px 0;
+    padding:28px 22px 0;
+    border-radius:var(--radius) var(--radius) 0 0;
+    background:
+      radial-gradient(circle at 86% 22%, color-mix(in srgb, var(--surface) 70%, transparent) 0 14px, transparent 15px),
+      radial-gradient(circle at 72% 9%, color-mix(in srgb, var(--surface) 60%, transparent) 0 7px, transparent 8px),
+      radial-gradient(circle at 94% 46%, color-mix(in srgb, var(--surface) 55%, transparent) 0 5px, transparent 6px),
+      var(--hero-grad);
+    overflow:hidden;
+  }
+  .chip{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12.5px; font-weight:700;
+    color:var(--cobalt);
+    background:var(--surface);
+    border-radius:999px;
+    padding:5px 12px;
+  }
+  .chip i{ width:7px; height:7px; border-radius:50%; background:var(--coral); }
+  .hero h1{ font-size:32px; line-height:1.3; margin:14px 0 0; max-width:12em; }
+  .hero-chars{
+    display:flex; justify-content:flex-end; align-items:flex-end; gap:0;
+    margin-top:-6px; height:150px;
+  }
+  .hero-chars img{ height:150px; width:auto; }
+  .hero-chars img + img{ height:138px; margin-left:-14px; }
+  .hero-chars img:first-child{ animation:bob 3.2s ease-in-out infinite; }
+  .hero-chars img + img{ animation:bob 3.2s ease-in-out .5s infinite; }
+  @keyframes bob{ 50%{ transform:translateY(-6px); } }
+
+  .intro-body{ display:flex; flex-direction:column; gap:18px; margin-top:20px; }
+  .lead{ margin:0; color:var(--muted); font-size:14.5px; }
+  .lead b{ color:var(--ink); }
+
+  .letter{
+    background:var(--surface-2);
+    border-radius:16px;
+    padding:18px 18px 16px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .letter h2{ font-size:17px; color:var(--cobalt); }
+  .letter p{ margin:0; font-size:14px; }
+  .sign{ text-align:right; font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:2px; }
+  .sign b{ display:block; font-size:15px; color:var(--ink); font-weight:700; }
+
+  .areas{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:0; padding:0; list-style:none; }
+  .areas li{
+    display:flex; align-items:center; gap:10px;
+    border:1.5px solid var(--line); border-radius:14px; padding:10px 12px;
+    font-size:13px; color:var(--muted); min-width:0;
+  }
+  .areas b{ display:block; color:var(--ink); font-size:14.5px; font-weight:700; line-height:1.35; }
+  .dot{ flex:none; width:12px; height:15px; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; clip-path:path('M6 0 C6 0 12 7 12 10 A6 6 0 0 1 0 10 C0 7 6 0 6 0Z'); }
+
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%; border:none; cursor:pointer;
+    font-size:16px; font-weight:700;
+    padding:15px 18px; border-radius:16px;
+    transition:transform .12s ease, background .15s ease, opacity .15s ease;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn-primary{ background:var(--btn-grad); color:var(--ink); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid var(--line); font-weight:500; font-size:15px; }
+  .btn:disabled{ opacity:.4; cursor:default; }
+  .stack{ display:flex; flex-direction:column; gap:10px; }
+
+  /* ---- 정보 입력 ---- */
+  .info-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+  .info-head h1{ font-size:26px; line-height:1.35; }
+  .info-head img{ width:84px; flex:none; margin:-8px -4px -6px 0; }
+  .field{ display:flex; flex-direction:column; gap:6px; }
+  .field label, .field .label{ font-size:13px; color:var(--muted); font-weight:500; }
+  .field input{
+    width:100%; padding:13px 14px; border-radius:12px;
+    border:1.5px solid var(--line); background:var(--surface); color:var(--ink);
+    font-family:inherit; font-size:16px;
+  }
+  .field input:focus{ outline:none; border-color:var(--pick-line); }
+  .roles{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .role-btn{
+    padding:13px 8px; border-radius:12px; border:1.5px solid var(--line);
+    background:var(--surface); color:var(--ink); font-size:15px; font-weight:500; cursor:pointer;
+  }
+  .role-btn[aria-pressed="true"]{ border-color:var(--pick-line); background:var(--pick); color:var(--ink); font-weight:700; }
+  .error{ color:var(--coral); font-size:13px; min-height:20px; margin:0; }
+  .note{ font-size:12.5px; color:var(--muted); margin:0; }
+
+  /* ---- 문항 ---- */
+  .q-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:13px; }
+  .q-cat{ font-weight:700; display:inline-flex; align-items:center; gap:6px; }
+  .tube{
+    position:relative; height:12px; border-radius:99px; margin:10px 0 0;
+    background:var(--water-soft); overflow:hidden;
+  }
+  .tube-fill{
+    position:absolute; inset:0 auto 0 0; border-radius:99px;
+    background:linear-gradient(90deg, #ffc6dc, #cdbcfb 50%, var(--water));
+    transition:width .35s cubic-bezier(.4,0,.2,1);
+  }
+  .q-body{ position:relative; margin-top:26px; min-height:150px; padding-right:86px; }
+  .q-num{ font-family:var(--font-display); font-size:15px; color:var(--cobalt); }
+  .q-text{ font-size:19px; line-height:1.6; font-weight:500; margin:6px 0 0; }
+  .q-char{ position:absolute; right:-6px; top:-4px; width:86px; }
+  .scale{ display:grid; grid-template-columns:repeat(5, minmax(0,1fr)); gap:6px; margin-top:22px; }
+  .opt{
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:12px 2px 10px; border-radius:14px;
+    border:1.5px solid var(--line); background:var(--surface); color:var(--ink); cursor:pointer;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .opt:active{ transform:scale(.95); }
+  .opt b{ font-family:var(--font-display); font-weight:400; font-size:23px; line-height:1.2; }
+  .opt span{ font-size:11px; color:var(--muted); line-height:1.3; text-align:center; }
+  .opt:hover{ border-color:var(--water); }
+  .opt[aria-pressed="true"]{ background:var(--pick); border-color:var(--pick-line); color:var(--ink); }
+  .opt[aria-pressed="true"] span{ color:var(--ink); }
+  .q-nav{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; margin-top:18px; gap:8px; }
+  .link{ background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; padding:10px 4px; }
+  .link:disabled{ opacity:.35; cursor:default; }
+  .link.next{ justify-self:end; color:var(--cobalt); font-weight:700; }
+  .link.skip{ text-decoration:underline; text-underline-offset:3px; }
+
+  /* ---- 결과 ---- */
+  .result-head{ display:grid; grid-template-columns:140px minmax(0,1fr); gap:16px; align-items:center; }
+  .drop{ width:140px; height:auto; display:block; }
+  .drop .level{ transition:transform 1.2s cubic-bezier(.3,.7,.2,1); }
+  .drop .score{ font-family:var(--font-display); font-size:34px; fill:var(--ink); }
+  .drop .unit{ font-size:11px; fill:var(--muted); font-family:var(--font-body); }
+  .verdict{ font-size:22px; line-height:1.35; }
+  .verdict-desc{ margin:8px 0 0; font-size:13.5px; color:var(--muted); line-height:1.65; }
+  .answered{ font-size:12.5px; color:var(--muted); margin-top:8px; font-variant-numeric:tabular-nums; }
+  .result-char{ display:flex; align-items:flex-end; gap:10px; margin:18px 0 0; padding:12px 14px; background:var(--surface-2); border-radius:16px; }
+  .result-char img{ width:62px; flex:none; margin:-22px 0 -4px; }
+  .result-char p{ margin:0; font-size:13.5px; min-width:0; }
+
+  .section{ margin-top:28px; display:flex; flex-direction:column; gap:12px; }
+  .section h2{ font-size:19px; }
+  .rank-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; }
+  .rank-row{ display:grid; grid-template-columns:30px minmax(0,1fr) auto; gap:4px 10px; align-items:center; }
+  .rank-num{
+    grid-row:span 2; width:30px; height:30px; border-radius:50%;
+    display:grid; place-items:center; font-family:var(--font-display); font-size:16px; color:var(--ink);
+  }
+  .rank-name{ font-weight:700; font-size:14.5px; }
+  .rank-score{ font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .rank-bar{ grid-column:2 / 4; height:8px; border-radius:99px; background:var(--track); overflow:hidden; }
+  .rank-bar i{ display:block; height:100%; border-radius:99px; }
+
+  .weak{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+  .weak li{ display:flex; gap:10px; padding:10px 0; border-bottom:1px dashed var(--line); font-size:14px; line-height:1.55; }
+  .weak li:last-child{ border-bottom:none; }
+  .weak .tag{
+    flex:none; font-size:11.5px; font-weight:700; color:var(--coral);
+    background:var(--coral-soft); border:1.5px solid var(--coral-soft); border-radius:8px; padding:0 7px; height:22px; line-height:19px; margin-top:1px;
+  }
+  .weak .cat{ display:block; font-size:11.5px; font-weight:700; }
+  .weak .more{ color:var(--muted); font-size:13px; }
+
+  .share{ margin-top:30px; padding:20px 16px; border-radius:18px; background:var(--surface-2); display:flex; flex-direction:column; gap:12px; }
+  .share h2{ font-size:19px; }
+  .share p{ margin:0; font-size:13px; color:var(--muted); }
+  .share-img{ width:100%; border-radius:14px; display:block; box-shadow:var(--shadow); }
+  .share-img:not([src]){ display:none; }
+  .share-img.pulse{ animation:pulse 1.4s ease 2; }
+  @keyframes pulse{ 50%{ box-shadow:0 0 0 6px var(--pick-line); } }
+  .msg{ font-size:13px; color:var(--cobalt); min-height:20px; margin:0; }
+
+
+  @media (max-width:380px){
+    .card{ padding:24px 16px; }
+    .hero{ margin:-24px -16px 0; padding:24px 16px 0; }
+    .hero h1{ font-size:28px; }
+    .areas{ grid-template-columns:1fr; }
+    .result-head{ grid-template-columns:110px minmax(0,1fr); }
+    .drop{ width:110px; }
+    .q-body{ padding-right:70px; }
+    .q-char{ width:70px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">교회 <em>효동친화도</em> 진단</div>
+    <div class="topbar-sub" id="topSub"></div>
+  </div>
+  <main class="card" id="root"></main>
+</div>
+
+<script>
+const QUESTIONS = [
+  // 환경 (시설) - 15
+  {c:"환경", t:"성전 내 또는 인접한 곳에 방음 처리된 자모실(유아실)이 있다."},
+  {c:"환경", t:"기저귀 교환대가 갖춰져 있다."},
+  {c:"환경", t:"수유를 위한 별도 공간이 마련되어 있다."},
+  {c:"환경", t:"화장실에 유아용 변기, 발판, 안전 손잡이가 있다."},
+  {c:"환경", t:"계단, 콘센트, 모서리 등에 안전장치(코너가드, 콘센트 커버 등)가 되어 있다."},
+  {c:"환경", t:"유모차 출입이 가능한 경사로나 엘리베이터가 있다."},
+  {c:"환경", t:"연령에 맞는 장난감과 매트가 있는 놀이 공간이 있다."},
+  {c:"환경", t:"미끄럼 방지 처리가 된 바닥재를 사용하고 있다."},
+  {c:"환경", t:"유아 눈높이에 맞는 정수기나 식수대가 있다."},
+  {c:"환경", t:"계단에 유아용 안전 난간이나 안전문이 설치되어 있다."},
+  {c:"환경", t:"실내 온도와 환기가 유아 기준으로 적절히 관리된다."},
+  {c:"환경", t:"주차장에서 성전까지 안전한 이동 동선이 확보되어 있다."},
+  {c:"환경", t:"친교실이나 식당에 유아용 식탁의자가 비치되어 있다."},
+  {c:"환경", t:"알레르기 유발 성분이 표시된 간식을 제공한다."},
+  {c:"환경", t:"응급처치용품(밴드, 체온계 등)이 비치되어 있다."},
+
+  // 문화 (태도·분위기) - 12
+  {c:"문화", t:"예배 중 아이가 울거나 소리를 내도 식구들이 부담 없이 받아들인다."},
+  {c:"문화", t:"부모가 아이 때문에 \"죄송하다\"는 말을 반복하지 않아도 되는 분위기다."},
+  {c:"문화", t:"자모실(유아실)이나 돌봄 공간에 대한 안내가 자연스럽게 이루어진다."},
+  {c:"문화", t:"자녀가 없는 식구들도 유아 동반 가정에 우호적이고 협조적이다."},
+  {c:"문화", t:"육아로 인한 지각, 조퇴, 불참이 너그럽게 받아들여진다."},
+  {c:"문화", t:"새로 온 유아 동반 가정에게 자연스러운 환영 인사가 이루어진다."},
+  {c:"문화", t:"아이 사진이나 영상을 촬영할 때 부모 동의를 구하는 문화가 있다."},
+  {c:"문화", t:"다둥이 가정에 대한 배려가 있다."},
+  {c:"문화", t:"한부모 가정도 편하게 참여할 수 있는 분위기다."},
+  {c:"문화", t:"아버지가 육아에 참여하는 것을 자연스럽게 여기는 문화가 있다."},
+  {c:"문화", t:"아이 울음소리에 대해 눈치를 주거나 부정적인 시선을 보내는 일이 없다."},
+  {c:"문화", t:"유아 동반 가정의 수고에 대해 감사와 격려의 말이 오간다."},
+
+  // 프로그램·운영 - 13
+  {c:"프로그램", t:"영유아부(영아부/유아부)가 별도로 운영된다."},
+  {c:"프로그램", t:"영유아부에 전담 교사나 도우미가 배치되어 있다."},
+  {c:"프로그램", t:"예배 시간 중 아이를 돌봐주는 시스템이 있다."},
+  {c:"프로그램", t:"새가족 중 유아 동반 가정을 위한 안내 자료나 오리엔테이션이 있다."},
+  {c:"프로그램", t:"부모들을 위한 육아 소모임이나 정보 공유 커뮤니티가 운영된다."},
+  {c:"프로그램", t:"절기 예배나 행사에 아이들이 참여할 수 있는 순서가 마련되어 있다."},
+  {c:"프로그램", t:"정기적인 부모 교육이나 육아 세미나가 열린다."},
+  {c:"프로그램", t:"방학이나 특별 기간에 아동 대상 프로그램이 운영된다."},
+  {c:"프로그램", t:"아이의 생일 등을 축하하는 이벤트가 있다."},
+  {c:"프로그램", t:"부모들 간 소통을 위한 온라인 커뮤니티(단체 채팅방 등)가 있다."},
+  {c:"프로그램", t:"부모들이 돌아가며 참여하는 봉사 로테이션 시스템이 있다."},
+  {c:"프로그램", t:"영아, 유아, 유치부 등 성장 단계에 맞는 프로그램이 구분되어 있다."},
+  {c:"프로그램", t:"가정예배나 가정축복과 관련된 자료가 부모에게 제공된다."},
+
+  // 안전·전문성 - 10
+  {c:"안전", t:"영유아부 교사나 봉사자에게 안전 교육(응급처치 등)이 이루어진다."},
+  {c:"안전", t:"아동 관련 사고나 실종 등 비상 상황 대응 매뉴얼이 있다."},
+  {c:"안전", t:"봉사자에 대한 최소한의 신원 확인 절차가 있다."},
+  {c:"안전", t:"아이를 맡기고 찾을 때 확인하는 입퇴실 체크 시스템이 있다."},
+  {c:"안전", t:"영유아부 공간에 CCTV 등 안전 모니터링 장치가 있다."},
+  {c:"안전", t:"아이의 알레르기나 특이사항을 사전에 파악하고 관리한다."},
+  {c:"안전", t:"화재나 재난 상황에 대비한 대피 훈련을 실시한 적이 있다."},
+  {c:"안전", t:"봉사자 대상 성범죄 경력 조회 등의 절차가 있다."},
+  {c:"안전", t:"안전사고에 대비한 보험에 가입되어 있다."},
+  {c:"안전", t:"시설에 대한 정기적인 안전 점검이 이루어진다."},
+];
+
+const CATEGORY_META = {
+  "환경":   {label:"환경·시설",     color:"#3a7fc6", tint:"#a9d5fa", char:"water1"},
+  "문화":   {label:"문화·분위기",   color:"#cc5a7e", tint:"#fbb9cf", char:"pure5"},
+  "프로그램":{label:"프로그램·운영", color:"#2f9677", tint:"#a5e3cd", char:"water5"},
+  "안전":   {label:"안전·전문성",   color:"#b97a12", tint:"#ffd99a", char:"pure1"},
+};
+const SCALE_LABELS = ["전혀 아니다","아니다","보통이다","그렇다","매우 그렇다"];
+const CHAR = name => `assets/chars/${name}.webp`;
+const STORE_KEY = "hyodong-survey-v1";
+
+let state = {
+  screen:"intro",     // intro | info | quiz | result
+  current:0,
+  answers:new Array(QUESTIONS.length).fill(null),
+  respondent:{ church:"", role:"" },
+};
+
+const root = document.getElementById("root");
+const topSub = document.getElementById("topSub");
+
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){}
+}
+function loadSaved(){
+  try{
+    const s = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if(s && Array.isArray(s.answers) && s.answers.length===QUESTIONS.length) return s;
+  }catch(e){}
+  return null;
+}
+function clearSaved(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} }
+
+function escapeHtml(v){
+  return String(v).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function go(screen){
+  state.screen = screen;
+  save();
+  render();
+  window.scrollTo({top:0});
+}
+
+function renderIntro(){
+  topSub.textContent = "";
+  const counts = {};
+  QUESTIONS.forEach(q=>{ counts[q.c]=(counts[q.c]||0)+1; });
+  const saved = loadSaved();
+  const answeredSaved = saved ? saved.answers.filter(a=>a!==null).length : 0;
+  const canResume = saved && saved.screen==="quiz" && answeredSaved>0;
+
+  root.innerHTML = `
+    <div class="hero">
+      <span class="chip"><i></i>1차 설문 · 현재 미취학 효동 대상</span>
+      <h1>우리 교회는 얼마나 효동친화적일까요?</h1>
+      <div class="hero-chars">
+        <img src="${CHAR("pure-hello")}" alt="손을 흔드는 퓨어랑">
+        <img src="${CHAR("water-hello")}" alt="손을 흔드는 워터랑">
+      </div>
+    </div>
+    <div class="intro-body">
+      <p class="lead">환경, 문화, 프로그램, 안전 네 영역 <b>50문항</b>에 1점(전혀 아니다)부터 5점(매우 그렇다)까지 답하며
+      우리 교회의 지금 모습을 스스로 점검합니다. 이번 1차 설문은 현재 미취학 효동을 둔 가정과 이들을 돌보는 교사의 시선으로 진행합니다.
+      10분 정도 걸리고, 답은 이 기기에만 남습니다.</p>
+
+      <section class="letter" aria-labelledby="letterTitle">
+        <h2 id="letterTitle">이 설문을 만든 이유</h2>
+        <p>이 진단은 누군가를 평가하거나 잘잘못을 따지려는 것이 아닙니다. 우리 교회가 나아갈 방향을 함께 고민하고,
+        특히 어린 자녀를 키우는 30대 가정이 교회에 편안히 정착할 수 있도록 무엇부터 바꿔 나가야 할지
+        우리 스스로 판단하고 우선순위를 정하기 위해 마련했습니다.</p>
+        <p>막연한 느낌이나 서로에 대한 오해 대신, 함께 확인한 내용을 바탕으로 발전적인 방향을 논의하는
+        건강한 창구가 되기를 바랍니다. 솔직하게 답해 주시는 것이 가장 큰 도움이 됩니다.</p>
+        <div class="sign">서울남부교구 효동고문<b>흑석동작가정교회 교회장 이진우</b></div>
+      </section>
+
+      <ul class="areas">
+        ${Object.keys(CATEGORY_META).map(k=>`
+          <li><span class="dot" style="background:${CATEGORY_META[k].tint}"></span>
+          <span><b>${CATEGORY_META[k].label}</b>${counts[k]}문항</span></li>`).join("")}
+      </ul>
+
+      <div class="stack">
+        ${canResume ? `<button class="btn btn-primary" id="resumeBtn">이어서 하기 (${answeredSaved}/${QUESTIONS.length} 응답)</button>` : ""}
+        <button class="btn ${canResume ? "btn-ghost" : "btn-primary"}" id="startBtn">${canResume ? "처음부터 새로 하기" : "진단 시작하기"}</button>
+      </div>
+    </div>
+  `;
+  document.getElementById("startBtn").onclick = ()=>{
+    clearSaved();
+    state = { screen:"info", current:0, answers:new Array(QUESTIONS.length).fill(null), respondent:{church:"", role:""} };
+    go("info");
+  };
+  if(canResume){
+    document.getElementById("resumeBtn").onclick = ()=>{ state = saved; go("quiz"); };
+  }
+}
+
+function renderInfo(){
+  topSub.textContent = "";
+  const r = state.respondent;
+  root.innerHTML = `
+    <div class="stack" style="gap:18px">
+      <div class="info-head">
+        <div>
+          <h1>먼저 두 가지만<br>알려 주세요</h1>
+          <p class="note" style="margin-top:6px">이름은 받지 않습니다.</p>
+        </div>
+        <img src="${CHAR("pure3")}" alt="웃고 있는 퓨어랑">
+      </div>
+      <div class="field">
+        <label for="churchInput">소속 교회</label>
+        <input type="text" id="churchInput" placeholder="예: 흑석동작가정교회" autocomplete="organization" value="${escapeHtml(r.church)}">
+      </div>
+      <div class="field">
+        <span class="label" id="roleLabel">역할</span>
+        <div class="roles" role="group" aria-labelledby="roleLabel">
+          ${["학부모","효동교사"].map(v=>`<button type="button" class="role-btn" data-role="${v}" aria-pressed="${r.role===v}">${v}</button>`).join("")}
+        </div>
+      </div>
+      <p class="error" id="infoError" role="alert"></p>
+      <button class="btn btn-primary" id="infoNextBtn">문항으로 가기</button>
+    </div>
+  `;
+  root.querySelectorAll(".role-btn").forEach(btn=>{
+    btn.onclick = ()=>{
+      r.role = btn.dataset.role;
+      root.querySelectorAll(".role-btn").forEach(b=>b.setAttribute("aria-pressed", String(b===btn)));
+    };
+  });
+  document.getElementById("infoNextBtn").onclick = ()=>{
+    r.church = document.getElementById("churchInput").value.trim();
+    if(!r.church || !r.role){
+      document.getElementById("infoError").textContent = "소속 교회를 적고 역할을 골라 주세요.";
+      return;
+    }
+    state.current = 0;
+    go("quiz");
+  };
+}
+
+function renderQuiz(){
+  const i = state.current;
+  const q = QUESTIONS[i];
+  const meta = CATEGORY_META[q.c];
+  const answered = state.answers.filter(a=>a!==null).length;
+  const pct = Math.round((i/QUESTIONS.length)*100);
+  const sel = state.answers[i];
+  topSub.textContent = `${i+1} / ${QUESTIONS.length}`;
+
+  root.innerHTML = `
+    <div class="q-top">
+      <span class="q-cat" style="color:${meta.color}"><span class="dot" style="background:${meta.tint}"></span>${meta.label}</span>
+      <span class="muted" style="font-variant-numeric:tabular-nums">${answered}문항 응답</span>
+    </div>
+    <div class="tube" role="progressbar" aria-valuemin="0" aria-valuemax="${QUESTIONS.length}" aria-valuenow="${i}" aria-label="진행률">
+      <div class="tube-fill" style="width:${pct}%"></div>
+    </div>
+    <div class="q-body">
+      <div class="q-num">문항 ${i+1}</div>
+      <p class="q-text">${q.t}</p>
+      <img class="q-char" src="${CHAR(meta.char)}" alt="">
+    </div>
+    <div class="scale" role="group" aria-label="점수 선택">
+      ${[1,2,3,4,5].map(v=>`
+        <button class="opt" data-v="${v}" aria-pressed="${sel===v}">
+          <b>${v}</b><span>${SCALE_LABELS[v-1]}</span>
+        </button>`).join("")}
+    </div>
+    <div class="q-nav">
+      <button class="link" id="prevBtn" ${i===0?"disabled":""}>← 이전</button>
+      <button class="link skip" id="skipBtn">${sel===null ? "건너뛰기" : "답 지우기"}</button>
+      <button class="link next" id="nextBtn" ${sel===null?"disabled":""}>${i===QUESTIONS.length-1 ? "결과 보기" : "다음"} →</button>
+    </div>
+  `;
+
+  const next = ()=>{
+    if(state.current < QUESTIONS.length-1){ state.current++; save(); render(); }
+    else go("result");
+  };
+  let locked = false;
+  root.querySelectorAll(".opt").forEach(btn=>{
+    btn.onclick = ()=>{
+      if(locked) return;
+      locked = true;
+      state.answers[i] = Number(btn.dataset.v);
+      root.querySelectorAll(".opt").forEach(b=>b.setAttribute("aria-pressed", String(b===btn)));
+      save();
+      setTimeout(next, 220);
+    };
+  });
+  document.getElementById("skipBtn").onclick = ()=>{
+    if(sel===null){ next(); }
+    else { state.answers[i] = null; save(); render(); }
+  };
+  document.getElementById("nextBtn").onclick = next;
+  document.getElementById("prevBtn").onclick = ()=>{ if(state.current>0){ state.current--; save(); render(); } };
+}
+
+function computeResult(){
+  const answers = state.answers;
+  const scores = answers.filter(a=>a!==null);
+  const answeredCount = scores.length;
+  const avgScore = answeredCount ? scores.reduce((a,b)=>a+b,0)/answeredCount : 0;
+  const scorePct = Math.round((avgScore/5)*100);
+
+  let verdict, verdictDesc, char, charLine;
+  if(answeredCount < 10){
+    verdict = "응답이 부족해요";
+    verdictDesc = "10문항 이상 답해야 결과를 믿을 수 있습니다. 이전 문항으로 돌아가 더 답해 주세요.";
+    char = "pure2"; charLine = "조금만 더 답해 주면 우리 교회 모습이 보여요!";
+  } else if(scorePct>=85){
+    verdict = "매우 효동친화적인 공동체";
+    verdictDesc = "환경, 문화, 운영 전반에서 효동 가정을 위한 배려가 잘 갖춰져 있습니다. 지금의 기준을 다음 세대에 전통으로 남기는 것이 다음 과제입니다.";
+    char = "pure3"; charLine = "효동들이 오고 싶은 교회예요. 지금처럼 이어가요!";
+  } else if(scorePct>=65){
+    verdict = "양호하지만 다듬을 부분이 있음";
+    verdictDesc = "기본적인 배려는 자리 잡았습니다. 낮은 점수를 준 항목부터 우선순위를 정해 하나씩 개선해 나가면 좋겠습니다.";
+    char = "water5"; charLine = "잘하고 있어요! 1순위 영역부터 함께 채워 봐요.";
+  } else if(scorePct>=40){
+    verdict = "개선이 필요한 단계";
+    verdictDesc = "효동 가정을 위한 기반이 부분적으로만 마련되어 있습니다. 가장 낮은 영역부터 구체적인 계획을 세워 보세요.";
+    char = "water1"; charLine = "하나씩 바꾸면 돼요. 1순위 영역부터 이야기해 봐요.";
+  } else {
+    verdict = "시급한 개선이 필요함";
+    verdictDesc = "효동친화적인 공동체로 나아가기 위한 준비가 초기 단계입니다. 작은 변화부터 시작해, 부모들이 안심하고 참여할 수 있는 환경을 만들어 가야 합니다.";
+    char = "water2"; charLine = "지금이 시작하기 좋은 때예요. 작은 것부터 함께해요!";
+  }
+
+  const catStats = {};
+  QUESTIONS.forEach((q,i)=>{
+    const s = catStats[q.c] || (catStats[q.c] = {sum:0, answered:0});
+    if(answers[i]!==null){ s.answered++; s.sum += answers[i]; }
+  });
+  // 개선 우선순위: 평균이 낮은 영역부터, 응답 없는 영역은 맨 뒤
+  const ranked = Object.keys(CATEGORY_META).map(k=>({
+    k, avg: catStats[k].answered ? catStats[k].sum/catStats[k].answered : null,
+  })).sort((a,b)=> a.avg===null ? 1 : b.avg===null ? -1 : a.avg-b.avg);
+
+  const weakAll = QUESTIONS.map((q,i)=>({q, i, v:answers[i]}))
+    .filter(x=>x.v!==null && x.v<=2)
+    .sort((a,b)=>a.v-b.v || a.i-b.i);
+
+  return {answeredCount, avgScore, verdict, verdictDesc, char, charLine, ranked, weakAll, enough: answeredCount>=10};
+}
+
+// 물방울 모양 (viewBox 0 0 120 150)
+const DROP_PATH = "M60 6 C60 6 108 60 108 96 A48 48 0 0 1 12 96 C12 60 60 6 60 6Z";
+
+function renderResult(){
+  topSub.textContent = "결과";
+  const R = computeResult();
+  const r = state.respondent;
+  const levelY = 144 - (R.avgScore/5)*138; // 물 높이
+
+  root.innerHTML = `
+    <div class="result-head">
+      <svg class="drop" viewBox="0 0 120 150" role="img" aria-label="평균 ${R.avgScore.toFixed(1)}점 (5점 만점)">
+        <defs><clipPath id="dropClip"><path d="${DROP_PATH}"/></clipPath></defs>
+        <path d="${DROP_PATH}" fill="var(--water-soft)"/>
+        <g clip-path="url(#dropClip)">
+          <g class="level" style="transform:translateY(150px)">
+            <path d="M-10 ${levelY} q15 -7 30 0 t30 0 t30 0 t30 0 t30 0 V160 H-10Z" fill="var(--water)"/>
+          </g>
+        </g>
+        <path d="${DROP_PATH}" fill="none" stroke="#7fb2ea" stroke-width="3"/>
+        <text class="score" x="60" y="106" text-anchor="middle">${R.avgScore.toFixed(1)}</text>
+        <text class="unit" x="60" y="124" text-anchor="middle">5점 만점</text>
+      </svg>
+      <div>
+        <h1 class="verdict">${R.verdict}</h1>
+        <p class="verdict-desc">${R.verdictDesc}</p>
+        <div class="answered">${R.answeredCount} / ${QUESTIONS.length}문항 응답</div>
+      </div>
+    </div>
+    <div class="result-char">
+      <img src="${CHAR(R.char)}" alt="">
+      <p>${R.charLine}</p>
+    </div>
+
+    ${R.enough ? `
+    <section class="section">
+      <h2>개선 우선순위</h2>
+      <ol class="rank-list">
+        ${R.ranked.map((x,idx)=>{
+          const m = CATEGORY_META[x.k];
+          return `<li class="rank-row">
+            <span class="rank-num" style="background:${m.tint}">${x.avg===null ? "-" : idx+1}</span>
+            <span class="rank-name">${m.label}</span>
+            <span class="rank-score">${x.avg===null ? "응답 없음" : `${x.avg.toFixed(1)} / 5.0`}</span>
+            <span class="rank-bar"><i style="width:${x.avg===null?0:x.avg/5*100}%;background:${m.tint}"></i></span>
+          </li>`;
+        }).join("")}
+      </ol>
+    </section>` : `
+    <div class="section"><button class="btn btn-primary" id="backToQuiz">문항으로 돌아가기</button></div>`}
+
+    ${R.enough && R.weakAll.length ? `
+    <section class="section">
+      <h2>낮은 점수(1~2점)를 준 항목</h2>
+      <ul class="weak">
+        ${R.weakAll.slice(0,12).map(x=>`
+          <li><span class="tag">${x.v}점</span>
+          <span><span class="cat" style="color:${CATEGORY_META[x.q.c].color}">${CATEGORY_META[x.q.c].label}</span>${x.q.t}</span></li>`).join("")}
+        ${R.weakAll.length>12 ? `<li class="more">외 ${R.weakAll.length-12}개 항목 더 있음</li>` : ""}
+      </ul>
+    </section>` : ""}
+
+    ${R.enough ? `
+    <section class="share">
+      <h2>결과 이미지로 나누기</h2>
+      <p>${escapeHtml(r.church)} · ${escapeHtml(r.role)}<br>이미지를 저장해 서로의 우선순위를 비교해 보세요. 응답은 어디에도 전송되지 않습니다.</p>
+      <img id="shareImg" class="share-img" alt="진단 결과 이미지">
+      <button class="btn btn-primary" id="saveImgBtn">이미지로 저장하기</button>
+      <button class="btn btn-ghost" id="shareImgBtn" hidden>카카오톡 등으로 공유하기</button>
+      <p class="msg" id="exportMsg" role="status">휴대폰에서는 위 이미지를 길게 눌러 저장할 수도 있습니다.</p>
+    </section>` : ""}
+
+    <div class="section">
+      <button class="btn btn-ghost" id="restartBtn">처음부터 다시 진단하기</button>
+    </div>
+  `;
+
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const lv = root.querySelector(".drop .level");
+    if(lv) lv.style.transform = "translateY(0)";
+  }));
+
+  document.getElementById("restartBtn").onclick = ()=>{
+    clearSaved();
+    state = { screen:"intro", current:0, answers:new Array(QUESTIONS.length).fill(null), respondent:{church:"", role:""} };
+    render();
+    window.scrollTo({top:0});
+  };
+  if(!R.enough){
+    document.getElementById("backToQuiz").onclick = ()=>{ state.current = 0; go("quiz"); };
+    return;
+  }
+
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`;
+  const filename = `효동친화도진단_${r.church.replace(/[\\/:*?"<>|]/g,"")}_${dateStr}.png`;
+  const exportMsg = document.getElementById("exportMsg");
+  const shareBtn = document.getElementById("shareImgBtn");
+  const saveBtn = document.getElementById("saveImgBtn");
+  const imgEl = document.getElementById("shareImg");
+  // 다른 페이지 안에 끼워진 채로 열리면(claude.ai 링크, 일부 앱 내 브라우저) 파일 내려받기와 공유 창이 막힌다
+  const embedded = (()=>{ try{ return window.self !== window.top; }catch(e){ return true; } })();
+  // claude.ai 링크에서 쓰는 저장 기능은 미리 불러 둬서, 버튼을 누르면 바로 반응하게 한다
+  const downloadsReady = (window.claude && window.claude.use)
+    ? Promise.race([window.claude.use("downloads"), new Promise(res=>setTimeout(()=>res(null), 4000))]).catch(()=>null)
+    : Promise.resolve(null);
+
+  function showLongPressHelp(){
+    exportMsg.textContent = "이 화면에서는 저장 버튼이 막혀 있어요. 위 결과 이미지를 길게 눌러 '이미지 저장'(PC는 마우스 오른쪽 버튼 → 이미지 저장)을 선택해 주세요.";
+    imgEl.scrollIntoView({behavior:"smooth", block:"center"});
+    imgEl.classList.remove("pulse"); void imgEl.offsetWidth; imgEl.classList.add("pulse");
+  }
+
+  const blobPromise = drawResultImage({ ...R, church:r.church, role:r.role, dateStr });
+  blobPromise.then(blob=>{
+    // 길게 눌러 저장하기가 잘 되도록 blob 주소 대신 data 주소로 보여 준다
+    const fr = new FileReader();
+    fr.onload = ()=>{ imgEl.src = fr.result; };
+    fr.readAsDataURL(blob);
+    const file = new File([blob], filename, {type:"image/png"});
+    if(!embedded && navigator.canShare && navigator.canShare({files:[file]})){
+      shareBtn.hidden = false;
+      shareBtn.onclick = async ()=>{
+        try{ await navigator.share({files:[file], title:"교회 효동친화도 진단 결과"}); }
+        catch(e){ if(e && e.name!=="AbortError") showLongPressHelp(); }
+      };
+    }
+  }).catch(()=>{
+    exportMsg.textContent = "이미지를 만들지 못했습니다. 화면을 캡처해 공유해 주세요.";
+  });
+
+  saveBtn.onclick = async ()=>{
+    let blob;
+    try{ blob = await blobPromise; }catch(e){ return; }
+    saveBtn.disabled = true;
+    try{
+      const downloads = await downloadsReady;
+      if(downloads){
+        try{
+          await downloads.save({ filename, data: blob });
+          exportMsg.textContent = "이미지를 저장했습니다.";
+        }catch(e){
+          if(e && e.code==="declined") exportMsg.textContent = "저장을 취소했습니다.";
+          else if(e && e.code==="rate_limited") exportMsg.textContent = "저장 창이 이미 열려 있어요. 잠시 뒤 다시 눌러 주세요.";
+          else showLongPressHelp();
+        }
+        return;
+      }
+      if(embedded){ showLongPressHelp(); return; }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 1000);
+      exportMsg.textContent = "이미지를 내려받았습니다. 휴대폰 사진첩에 없으면 위 이미지를 길게 눌러 저장해 주세요.";
+    } finally {
+      saveBtn.disabled = false;
+    }
+  };
+}
+
+function loadImage(src){
+  return new Promise(resolve=>{
+    const im = new Image();
+    im.onload = ()=>resolve(im);
+    im.onerror = ()=>resolve(null);
+    im.src = src;
+  });
+}
+
+// 공유용 결과 이미지(PNG). 화면 테마와 관계없이 밝은 색으로 고정한다.
+async function drawResultImage(data){
+  const W = 1080, PAD = 64, IN = W - PAD*2;
+  const SANS = "'Noto Sans KR', sans-serif", DISP = "'Jua', 'Noto Sans KR', sans-serif";
+  const C = { sky:"#f6f3ff", soft:"#e6f4fd", track:"#efeaf9", card:"#ffffff", ink:"#2c3a5e", muted:"#77809e", water:"#a7d8f7", stroke:"#7fb2ea", cobalt:"#5b7fd6", coral:"#d9586c", coralSoft:"#ffe6eb", pink:"#ffe3ef", lav:"#ece3ff", blue:"#dcefff" };
+  const weakShown = data.weakAll.slice(0,6);
+
+  const allText = [data.church, data.role, data.verdict, ...weakShown.map(x=>x.q.t), ...Object.values(CATEGORY_META).map(m=>m.label),
+    "교회효동친화도진단결과개선우선순위가장먼저살펴볼항목점만점문항응답외개더있음없음차미취학대상서울남부교구효동고문흑석동작가정교회교회장이진우0123456789.·-/ "].join("");
+  try{
+    await Promise.all([
+      document.fonts.load(`400 40px ${DISP}`, allText),
+      document.fonts.load(`700 40px ${SANS}`, allText),
+      document.fonts.load(`500 40px ${SANS}`, allText),
+      document.fonts.load(`400 40px ${SANS}`, allText),
+    ]);
+  }catch(e){ /* 폰트를 못 불러오면 기본 글꼴로 그림 */ }
+  const [imgPure, imgWater] = await Promise.all([loadImage(CHAR("pure-hello")), loadImage(CHAR("water-hello"))]);
+
+  // 키 큰 캔버스에 그린 뒤 실제 높이만큼 잘라낸다
+  const scale = 2, MAXH = 3200;
+  const cv = document.createElement("canvas");
+  cv.width = W*scale; cv.height = MAXH*scale;
+  const ctx = cv.getContext("2d");
+  ctx.scale(scale, scale);
+  let bgG = ctx.createLinearGradient(0,0,0,MAXH*0.5);
+  bgG.addColorStop(0,"#fff1f7"); bgG.addColorStop(.5,"#f3efff"); bgG.addColorStop(1,"#eaf6ff");
+  ctx.fillStyle = bgG; ctx.fillRect(0,0,W,MAXH);
+
+  function wrap(text, font, maxW){
+    ctx.font = font;
+    const lines = []; let line = "";
+    for(const ch of text){
+      if(ctx.measureText(line+ch).width > maxW && line){ lines.push(line); line = ch.trim() ? ch : ""; }
+      else line += ch;
+    }
+    if(line) lines.push(line);
+    return lines;
+  }
+
+  // 머리 영역
+  const heroH = 330;
+  let g = ctx.createLinearGradient(0,0,W,heroH);
+  g.addColorStop(0, C.pink); g.addColorStop(.52, C.lav); g.addColorStop(1, C.blue);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,heroH);
+  ctx.fillStyle = "rgba(255,255,255,.7)";
+  [[640,70,16],[700,40,8],[600,130,6]].forEach(([x,y,r])=>{ ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); });
+  if(imgPure){ const h=240, w=imgPure.width*h/imgPure.height; ctx.drawImage(imgPure, W-PAD-w-150, heroH-h+10, w, h); }
+  if(imgWater){ const h=222, w=imgWater.width*h/imgWater.height; ctx.drawImage(imgWater, W-PAD-w+10, heroH-h+10, w, h); }
+
+  ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+  // 칩
+  ctx.font = `700 24px ${SANS}`;
+  const chipText = "1차 · 미취학 효동 대상";
+  const chipW = ctx.measureText(chipText).width + 56;
+  ctx.fillStyle = C.card; roundRect(ctx, PAD, 64, chipW, 46, 23); ctx.fill();
+  ctx.fillStyle = C.coral; ctx.beginPath(); ctx.arc(PAD+24, 87, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = C.cobalt; ctx.fillText(chipText, PAD+40, 96);
+  ctx.fillStyle = C.ink; ctx.font = `400 58px ${DISP}`;
+  ctx.fillText("교회 효동친화도", PAD, 186);
+  ctx.fillText("진단 결과", PAD, 254);
+  ctx.fillStyle = C.muted; ctx.font = `500 26px ${SANS}`;
+  ctx.fillText(`${data.church} · ${data.role} · ${data.dateStr}`, PAD, 304);
+
+  // 점수 카드
+  let y = heroH + 20;
+  const cardH = 250;
+  ctx.fillStyle = C.card; roundRect(ctx, PAD, y, IN, cardH, 32); ctx.fill();
+  // 물방울
+  const dropS = 1.45, dx = PAD+36, dy = y+16;
+  ctx.save();
+  ctx.translate(dx, dy); ctx.scale(dropS, dropS);
+  const drop = new Path2D(DROP_PATH);
+  ctx.fillStyle = C.soft; ctx.fill(drop);
+  ctx.save(); ctx.clip(drop);
+  const lv = 144 - (data.avgScore/5)*138;
+  ctx.fillStyle = C.water;
+  ctx.beginPath(); ctx.moveTo(-10, lv);
+  for(let k=0;k<5;k++){ ctx.quadraticCurveTo(-10+k*30+7.5, lv-7, -10+k*30+15, lv); ctx.quadraticCurveTo(-10+k*30+22.5, lv+7, -10+k*30+30, lv); }
+  ctx.lineTo(140,160); ctx.lineTo(-10,160); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.lineWidth = 3; ctx.strokeStyle = C.stroke; ctx.stroke(drop);
+  ctx.restore();
+  ctx.fillStyle = C.ink; ctx.font = `400 50px ${DISP}`; ctx.textAlign = "center";
+  ctx.fillText(data.avgScore.toFixed(1), dx+60*dropS, dy+108*dropS);
+  ctx.textAlign = "left";
+  const tx = PAD + 36 + 120*dropS + 36, tw = PAD+IN-36-tx;
+  ctx.fillStyle = C.muted; ctx.font = `500 24px ${SANS}`;
+  ctx.fillText(`5점 만점 · ${data.answeredCount}문항 응답`, tx, y+82);
+  const vLines = wrap(data.verdict, `400 44px ${DISP}`, tw);
+  ctx.fillStyle = C.cobalt; ctx.font = `400 44px ${DISP}`;
+  vLines.forEach((ln,li)=>ctx.fillText(ln, tx, y+142+li*54));
+  y += cardH;
+
+  // 개선 우선순위
+  y += 84;
+  ctx.fillStyle = C.ink; ctx.font = `400 40px ${DISP}`;
+  ctx.fillText("개선 우선순위", PAD, y);
+  y += 28;
+  data.ranked.forEach((x,idx)=>{
+    const m = CATEGORY_META[x.k];
+    ctx.fillStyle = m.tint;
+    ctx.beginPath(); ctx.arc(PAD+24, y+40, 24, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = C.ink; ctx.font = `400 28px ${DISP}`; ctx.textAlign = "center";
+    ctx.fillText(x.avg===null ? "-" : String(idx+1), PAD+24, y+50);
+    ctx.textAlign = "left";
+    ctx.fillStyle = C.ink; ctx.font = `700 31px ${SANS}`;
+    ctx.fillText(m.label, PAD+68, y+51);
+    ctx.fillStyle = C.muted; ctx.font = `500 27px ${SANS}`; ctx.textAlign = "right";
+    ctx.fillText(x.avg===null ? "응답 없음" : `${x.avg.toFixed(1)} / 5.0`, PAD+IN, y+51);
+    ctx.textAlign = "left";
+    ctx.fillStyle = C.track; roundRect(ctx, PAD+68, y+72, IN-68, 14, 7); ctx.fill();
+    if(x.avg!==null){ ctx.fillStyle = m.tint; roundRect(ctx, PAD+68, y+72, Math.max(14,(IN-68)*x.avg/5), 14, 7); ctx.fill(); }
+    y += 108;
+  });
+
+  // 가장 먼저 살펴볼 항목
+  if(weakShown.length){
+    y += 30;
+    ctx.fillStyle = C.ink; ctx.font = `400 40px ${DISP}`;
+    ctx.fillText("가장 먼저 살펴볼 항목", PAD, y+40);
+    y += 70;
+    const itemFont = `400 29px ${SANS}`, lh = 44, tagW = 80;
+    const boxTop = y;
+    const rows = weakShown.map(x=>wrap(x.q.t, itemFont, IN - 48 - tagW - 16));
+    const boxH = 28 + rows.reduce((a,l)=>a + l.length*lh + 26, 0) + (data.weakAll.length>weakShown.length ? 44 : 0);
+    ctx.fillStyle = C.card; roundRect(ctx, PAD, boxTop, IN, boxH, 28); ctx.fill();
+    y = boxTop + 28;
+    weakShown.forEach((x,idx)=>{
+      ctx.fillStyle = C.coralSoft;
+      roundRect(ctx, PAD+24, y+4, tagW-12, 38, 10); ctx.fill();
+      ctx.fillStyle = C.coral; ctx.font = `700 22px ${SANS}`; ctx.textAlign = "center";
+      ctx.fillText(`${x.v}점`, PAD+24+(tagW-12)/2, y+31);
+      ctx.textAlign = "left";
+      ctx.fillStyle = C.ink; ctx.font = itemFont;
+      rows[idx].forEach((ln,li)=>ctx.fillText(ln, PAD+24+tagW+8, y+32+li*lh));
+      y += rows[idx].length*lh + 26;
+    });
+    if(data.weakAll.length>weakShown.length){
+      ctx.fillStyle = C.muted; ctx.font = `400 25px ${SANS}`;
+      ctx.fillText(`외 ${data.weakAll.length-weakShown.length}개 항목 더 있음`, PAD+24+tagW+8, y+14);
+    }
+    y = boxTop + boxH;
+  }
+
+  // 바닥글
+  y += 70;
+  ctx.fillStyle = C.muted; ctx.textAlign = "center";
+  ctx.font = `500 24px ${SANS}`;
+  ctx.fillText("서울남부교구 효동고문 · 흑석동작가정교회 교회장 이진우", W/2, y);
+  const H = Math.min(MAXH, y + 56);
+
+  const out = document.createElement("canvas");
+  out.width = W*scale; out.height = H*scale;
+  out.getContext("2d").drawImage(cv, 0, 0);
+  return new Promise((resolve,reject)=>out.toBlob(b=> b ? resolve(b) : reject(new Error("toBlob failed")), "image/png"));
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function render(){
+  if(state.screen==="intro") renderIntro();
+  else if(state.screen==="info") renderInfo();
+  else if(state.screen==="quiz") renderQuiz();
+  else renderResult();
+}
+
+render();
+</script>
+</body>
+</html>
